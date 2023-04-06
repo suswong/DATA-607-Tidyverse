@@ -103,7 +103,7 @@ We find the total women, total men, and total people for each major category.
 By now, we should have the total women, total men, and total people for each major category.
 Use `mutate()` from the `dplyr` package to create a new column for the percentage of women for each major category.
 Use `na.rm=TRUE` to exclude NA's.
-Otherwise, the NA will be return if there is a NA value for the major category.
+Otherwise, NA can be return if there is a NA value for the major category.
 
 ```{r, message=FALSE}
 # install.packages('dplyr')
@@ -148,10 +148,83 @@ Use `scale_x_continuous()` from `ggplot2` package and `percent()` from `scales` 
 ggplot(data = college_major, aes(y = reorder(Major_category, ShareWomen), x = ShareWomen)) + geom_bar(stat="identity")  +  labs(x = "Percentage of Women" , y = "Major Category") + ggtitle("Percentage of Women in Each Major Category") + scale_x_continuous(labels = scales::percent) 
 ```
 
+The top major category that has the highest share of women are Health, Education, and Psychology & Social Work. 
+
+# Question 2: Which major category has the highest unemployment rate?
+
+## Analysis
+
+We need to create additional variables. Find the total recent gradates that were employed and umemployed. Find the total recent gradates that had jobs with college degree or non-degree as a qualification. 
+
+Just extend our last code. 
+
+```
+college_major <- raw_data %>%
+  group_by(Major_category) %>%
+  summarise(total = sum(Total,na.rm=TRUE), 
+            Men = sum(Men,na.rm=TRUE), 
+            Women = sum(Women,na.rm=TRUE), 
+            Employed = sum(Employed, na.rm=TRUE), 
+            Full_time = sum(Full_time, na.rm=TRUE), 
+            Part_time = sum(Part_time, na.rm=TRUE), 
+            Full_time_year_round = sum(Full_time_year_round, na.rm=TRUE), 
+            Unemployed = sum(Unemployed, na.rm=TRUE), 
+            College_jobs = sum(College_jobs, na.rm=TRUE), 
+            Non_college_jobs = sum(Non_college_jobs,na.rm=TRUE), 
+            Low_wage_jobs = sum(Low_wage_jobs, na.rm=TRUE))
+```
+
+Use `mutate` to create a new variable, `Unemployment_rate`. To find the unemployment rate,
+$ Unemployment.rate=\frac{Unemployed}{Unemployed+Employed}$
+
+```{r}
+college_major <- raw_data %>%
+  group_by(Major_category) %>%
+  summarise(total = sum(Total,na.rm=TRUE), 
+            Men = sum(Men,na.rm=TRUE), 
+            Women = sum(Women,na.rm=TRUE), 
+            Employed = sum(Employed, na.rm=TRUE), 
+            Full_time = sum(Full_time, na.rm=TRUE), 
+            Part_time = sum(Part_time, na.rm=TRUE), 
+            Full_time_year_round = sum(Full_time_year_round, na.rm=TRUE), 
+            Unemployed = sum(Unemployed, na.rm=TRUE), 
+            College_jobs = sum(College_jobs, na.rm=TRUE), 
+            Non_college_jobs = sum(Non_college_jobs,na.rm=TRUE), 
+            Low_wage_jobs = sum(Low_wage_jobs, na.rm=TRUE)) %>%
+  mutate(Unemployment_rate = Unemployed/(Unemployed + Employed) )
+```
+
+## Visualization
+
+Here is another approach to create our bar graph. 
+
+We can also use the same code as in question 1. Simply, just replace `Major_category` with `Unemployment_rate` and rename the axes with their appropriate names. 
+
+```{r}
+ggplot(data = college_major, aes(y = reorder(Major_category, Unemployment_rate), x = Unemployment_rate)) + geom_bar(stat="identity")  +  labs(x = "Unemployment Rate" , y = "Major Category") + ggtitle("Unemployment Rate") + scale_x_continuous(labels = scales::percent) 
+```
+The top three major category that has the highest unemployment rate are Social Science, Arts, and Humanities & Liberal Arts. The top three major category that has the lowest unemployment rate are Education, Physical Sciences, and Agriculture & Natural Resources. 
+
+## Conclusion
+
+Question 1: Which major category has the highest share of women?
+
+The top three major category that has the highest share of women are Health, Education, and Psychology & Social Work. 
+
+Question 2: Which major category has the highest unemployment rate?
+
+The top three major category that has the highest unemployment rate are Social Science, Arts, and Humanities & Liberal Arts. The top three major category that has the lowesr unemployment rate are Education, Physical Sciences, and Agriculture & Natural Resources. 
+
 # Source
 
+Below are links to get more information related to the functions in the mentioned packages. 
+
 <https://www.tidyverse.org/packages/>
+
+https://readr.tidyverse.org/
 
 <https://dplyr.tidyverse.org/reference/index.html>
 
 <https://ggplot2.tidyverse.org/reference/>
+
+https://rstudio.github.io/DT/
