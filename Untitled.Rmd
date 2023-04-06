@@ -29,6 +29,37 @@ You should clone the provided repository. Once you have code to submit, you shou
 
 # Dataset 
 
+# Load data
+
+The data is in store in a csv file that can be found here. 
+
+`read.csv` will read the csv file as a dataframe. Use `<-` to store the data as a variable in R. Below, we store the data as `raw_data`.
+
+```{r}
+raw_data <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/recent-grads.csv")
+```
+
+# Which major category has the highest share of women? {.tabset}
+
+
+```{r pressure, echo=FALSE}
+library(dplyr)
+# install.packages('ggplot2')
+library(ggplot2)
+# college_major <- raw_data %>%
+#   group_by(Major_category) %>%
+#   summarise(total = sum(Total,na.rm=TRUE), Men = sum(Men,na.rm=TRUE), Women = sum(Women,na.rm=TRUE), Employed = sum(Employed, na.rm=TRUE), Full_time = sum(Full_time, na.rm=TRUE), Part_time = sum(Part_time, na.rm=TRUE), Full_time_year_round = sum(Full_time_year_round, na.rm=TRUE), Unemployed = sum(Unemployed, na.rm=TRUE), College_jobs = sum(College_jobs, na.rm=TRUE), Non_college_jobs = sum(Non_college_jobs,na.rm=TRUE), Low_wage_jobs = sum(Low_wage_jobs, na.rm=TRUE))
+
+college_major <- raw_data %>%
+  group_by(Major_category) %>%
+  summarise(Total = sum(Total,na.rm=TRUE), Men = sum(Men,na.rm=TRUE), Women = sum(Women,na.rm=TRUE)) %>%
+  mutate(ShareWomen = Women/Total)
+
+```
+
+```{r}
+ggplot(data = college_major, aes(x = reorder(Major_category, ShareWomen), y = ShareWomen)) + geom_bar(stat="identity") + coord_flip() + 
+```
 
 
  
