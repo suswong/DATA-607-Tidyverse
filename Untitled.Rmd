@@ -192,6 +192,8 @@ college_major <- raw_data %>%
             Non_college_jobs = sum(Non_college_jobs,na.rm=TRUE), 
             Low_wage_jobs = sum(Low_wage_jobs, na.rm=TRUE)) %>%
   mutate(Unemployment_rate = Unemployed/(Unemployed + Employed) )
+
+datatable(college_major, options = list(scrollX = TRUE))
 ```
 
 ## Visualization
@@ -228,3 +230,5 @@ https://readr.tidyverse.org/
 <https://ggplot2.tidyverse.org/reference/>
 
 https://rstudio.github.io/DT/
+
+
