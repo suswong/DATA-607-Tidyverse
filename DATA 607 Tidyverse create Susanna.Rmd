@@ -45,7 +45,7 @@ The `tidyverse` package is a collection of packages that includes `ggplot2`, `dp
 For this assignment, we will be using the following packages.
 
 | Package   | Function                                                                                                                              |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------|
+|-------------|-----------------------------------------------------------|
 | `readr`   | `read_csv`                                                                                                                            |
 | `dplyr`   | `glimpse()` `group_by()` `summarise()` `mutate()`                                                                                     |
 | `ggplot2` | `ggplot()` `geom_bar()` `scale_x_continuous()` `scale_y_continuous()` `labs()` `xlab()` `ylab()` `ggtitle()` `theme()` `coord_flip()` |
@@ -234,5 +234,7 @@ Below are links to get more information related to the functions in the mentione
 <https://dplyr.tidyverse.org/reference/index.html>
 
 <https://ggplot2.tidyverse.org/reference/>
+
+<https://r-charts.com/ranking/bar-plot-ggplot2/>
 
 <https://rstudio.github.io/DT/>
