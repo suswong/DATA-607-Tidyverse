@@ -1,0 +1,238 @@
+---
+title: "DATA 607 TidyVerse Create Assignment"
+author: "Susanna Wong"
+date: "2023-04-05"
+output:
+  html_document:
+    theme: cerulean
+    # code_folding: hide
+    toc: true
+    toc_float: true
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Assignment Prompt
+
+In this assignment, you'll practice collaborating around a code project with GitHub.
+You could consider our collective work as building out a book of examples on how to use TidyVerse functions.
+GitHub repository: <https://github.com/acatlin/SPRING2023TIDYVERSE> FiveThirtyEight.com datasets.
+Kaggle datasets.
+
+Your task here is to Create an Example.
+Using one or more TidyVerse packages, and any dataset from fivethirtyeight.com or Kaggle, create a programming sample "vignette" that demonstrates how to use one or more of the capabilities of the selected TidyVerse package with your selected dataset.
+(25 points)
+
+Later, you'll be asked to extend an existing vignette.
+Using one of your classmate's examples (as created above), you'll then extend his or her example with additional annotated code.
+(15 points)
+
+You should clone the provided repository.
+Once you have code to submit, you should make a pull request on the shared repository.
+You should also update the README.md file with your example.
+After you've created your vignette, please submit your GitHub handle name in the submission link provided below.
+This will let your instructor know that your work is ready to be peer-graded.
+
+# Packages
+
+The `tidyverse` package is a collection of packages that includes `ggplot2`, `dplyr`, `tidyr`, `readr`, `purr`, `tibble`, `stringr`, `forcats`.
+
+For this assignment, we will be using the following packages.
+
+| Package   | Function                                                      |
+|-------------------|-----------------------------------------------------|
+| `readr`   | `read.csv`                                                    |
+| `dplyr`   | `glimpse` `group_by()` `summarise()` `mutate()`               |
+| `ggplot2` | `ggplot` `geom_bar` `scale_x_continuous()` `labs()` `ggtitle` |
+| `scales`  | `percent()`                                                   |
+| `DT`      | `datatable()`                                                 |
+
+# Dataset
+
+We will analyze the college major dataset from FiveThirtyEight,
+
+# Load data
+
+The data is in store in a csv file that can be found here.
+
+Use `read.csv` from `readr` package to read the csv file as a dataframe.
+Use `<-` to store the data as a variable in R.
+Below, we store the data as `raw_data`.
+You can use `glimpse()` from `dplyr` package to get a glimpse of the data.
+
+```{r, message=FALSE}
+raw_data <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/recent-grads.csv")
+
+library(DT)
+datatable(raw_data, options = list(scrollX = TRUE))
+```
+
+# Question 1: Which major category has the highest share of women? {.tabset}
+
+## Analysis
+
+In the `raw_data`, there are detailed information for each of the 173 majors.
+In order to answer the question, we need to group the major category, and find the total people, total women, and total men for each major category.
+
+It seems that the `raw_data` is already tidied.
+We should create a new dataframe for our analysis and make no changes to the `raw_data`.
+
+Use `%>%` from the `magrittr` package to pipe the `raw_data` into our new dataframe, `college_major`.
+
+    college_major <- raw_data %>%
+
+Next, use `group_by()` function from the `dplyr` package to group rows by column value, `Major_category`.
+
+    college_major <- raw_data %>%
+      group_by(Major_category) %>%
+
+Then, use `summarise()` and `sum()` functions to sum by group.
+We find the total women, total men, and total people for each major category. Use `na.rm=TRUE` to exclude NA's.
+Otherwise, NA can be return if there is a NA value for the major category.
+
+```
+college_major <- raw_data %>%
+  group_by(Major_category) %>% #Here we group the major category
+  summarise(Total = sum(Total,na.rm=TRUE), 
+            Men = sum(Men,na.rm=TRUE), 
+            Women = sum(Women,na.rm=TRUE))
+```
+
+By now, we should have the total women, total men, and total people for each major category.
+Use `mutate()` from the `dplyr` package to create a new column for the percentage of women for each major category.
+
+```{r, message=FALSE}
+# install.packages('dplyr')
+library(dplyr)
+
+college_major <- raw_data %>%
+  group_by(Major_category) %>% #Here we group the major category
+  summarise(Total = sum(Total,na.rm=TRUE), 
+            Men = sum(Men,na.rm=TRUE), 
+            Women = sum(Women,na.rm=TRUE)) %>% # We find the total women, total men, and total people for each major category. 
+  mutate(ShareWomen = Women/Total)
+```
+
+```{r}
+datatable(college_major, options = list(scrollX = TRUE), caption = 'Table 1: This is raw_data from FiveThirtyEight. It contains the number of recent grads for each major, the type of jobs they got, and more')
+```
+
+## Visualization
+
+Use `ggplot` to graph the dataframe.
+Use `reorder()` function to reorder the major category by the percentage of women.
+
+The code below will reorder the `Major_category` by the percentage of women from highest to lowest.
+
+```{r}
+# install.packages('ggplot2')
+library(ggplot2)
+
+ggplot(data = college_major, aes(y = reorder(Major_category, ShareWomen), x = ShareWomen)) + geom_bar(stat="identity")  
+```
+
+The code below will reorder the `Major_category` by the percentage of women from lowest to highest.
+
+```{r}
+ggplot(data = college_major, aes(y = reorder(Major_category, -ShareWomen), x = ShareWomen)) + geom_bar(stat="identity")  
+```
+
+Rename the axes label using `labs()`.
+Add a title for the bar graph using `ggtitle()`.
+Use `scale_x_continuous()` from `ggplot2` package and `percent()` from `scales` package to include percentage in the x-axis.
+
+```{r}
+ggplot(data = college_major, aes(y = reorder(Major_category, ShareWomen), x = ShareWomen)) + geom_bar(stat="identity")  +  labs(x = "Percentage of Women" , y = "Major Category") + ggtitle("Percentage of Women in Each Major Category") + scale_x_continuous(labels = scales::percent) 
+```
+
+The top major category that has the highest share of women are Health, Education, and Psychology & Social Work.
+
+# Question 2: Which major category has the highest unemployment rate? {.tabset}
+
+## Analysis
+
+We need to create additional variables.
+Find the total recent gradates that were employed and umemployed.
+Find the total recent gradates that had jobs with college degree or non-degree as a qualification.
+
+Just extend our last code.
+
+    college_major <- raw_data %>%
+      group_by(Major_category) %>%
+      summarise(total = sum(Total,na.rm=TRUE), 
+                Men = sum(Men,na.rm=TRUE), 
+                Women = sum(Women,na.rm=TRUE), 
+                Employed = sum(Employed, na.rm=TRUE), 
+                Full_time = sum(Full_time, na.rm=TRUE), 
+                Part_time = sum(Part_time, na.rm=TRUE), 
+                Full_time_year_round = sum(Full_time_year_round, na.rm=TRUE), 
+                Unemployed = sum(Unemployed, na.rm=TRUE), 
+                College_jobs = sum(College_jobs, na.rm=TRUE), 
+                Non_college_jobs = sum(Non_college_jobs,na.rm=TRUE), 
+                Low_wage_jobs = sum(Low_wage_jobs, na.rm=TRUE))
+
+Use `mutate` to create a new variable, `Unemployment_rate`.
+To find the unemployment rate, \$ Unemployment.rate=\frac{Unemployed}{Unemployed+Employed}\$
+
+```{r}
+college_major <- raw_data %>%
+  group_by(Major_category) %>%
+  summarise(total = sum(Total,na.rm=TRUE), 
+            Men = sum(Men,na.rm=TRUE), 
+            Women = sum(Women,na.rm=TRUE), 
+            Employed = sum(Employed, na.rm=TRUE), 
+            Full_time = sum(Full_time, na.rm=TRUE), 
+            Part_time = sum(Part_time, na.rm=TRUE), 
+            Full_time_year_round = sum(Full_time_year_round, na.rm=TRUE), 
+            Unemployed = sum(Unemployed, na.rm=TRUE), 
+            College_jobs = sum(College_jobs, na.rm=TRUE), 
+            Non_college_jobs = sum(Non_college_jobs,na.rm=TRUE), 
+            Low_wage_jobs = sum(Low_wage_jobs, na.rm=TRUE)) %>%
+  mutate(Unemployment_rate = Unemployed/(Unemployed + Employed) )
+
+datatable(college_major, options = list(scrollX = TRUE))
+```
+
+## Visualization
+
+Here is another approach to create our bar graph.
+
+We can also use the same code as in question 1.
+Simply, just replace `Major_category` with `Unemployment_rate` and rename the axes with their appropriate names.
+
+```{r}
+ggplot(data = college_major, aes(y = reorder(Major_category, Unemployment_rate), x = Unemployment_rate)) + geom_bar(stat="identity")  +  labs(x = "Unemployment Rate" , y = "Major Category") + ggtitle("Unemployment Rate") + scale_x_continuous(labels = scales::percent) 
+```
+
+The top three major category that has the highest unemployment rate are Social Science, Arts, and Humanities & Liberal Arts.
+The top three major category that has the lowest unemployment rate are Education, Physical Sciences, and Agriculture & Natural Resources.
+
+# Conclusion
+
+Question 1: Which major category has the highest share of women?
+
+The top three major category that has the highest share of women are Health, Education, and Psychology & Social Work.
+
+Question 2: Which major category has the highest unemployment rate?
+
+The top three major category that has the highest unemployment rate are Social Science, Arts, and Humanities & Liberal Arts.
+The top three major category that has the lowest unemployment rate are Education, Physical Sciences, and Agriculture & Natural Resources.
+
+# Source
+
+Below are links to get more information related to the functions in the mentioned packages.
+
+<https://www.tidyverse.org/packages/>
+
+<https://readr.tidyverse.org/>
+
+<https://dplyr.tidyverse.org/reference/index.html>
+
+<https://ggplot2.tidyverse.org/reference/>
+
+<https://rstudio.github.io/DT/>
