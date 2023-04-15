@@ -59,13 +59,14 @@ We will analyze the college major dataset from FiveThirtyEight,
 
 The data is in store in a csv file that can be found here.
 
-Use `read.csv` from `readr` package to read the csv file as a dataframe.
+Use `read_csv` from `readr` package to read the csv file as a dataframe.
 Use `<-` to store the data as a variable in R.
 Below, we store the data as `raw_data`.
 You can use `glimpse()` from `dplyr` package to get a glimpse of the data.
 
 ```{r, message=FALSE}
-raw_data <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/recent-grads.csv")
+library(readr)
+raw_data <- read_csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/recent-grads.csv")
 
 library(DT)
 datatable(raw_data, options = list(scrollX = TRUE))
