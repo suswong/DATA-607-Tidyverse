@@ -225,6 +225,8 @@ The top three major category that has the lowest unemployment rate are Education
 
 # Source
 
+<https://github.com/fivethirtyeight/data/tree/master/college-majors>
+
 Below are links to get more information related to the functions in the mentioned packages.
 
 <https://www.tidyverse.org/packages/>
