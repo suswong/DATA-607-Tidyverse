@@ -44,13 +44,12 @@ The `tidyverse` package is a collection of packages that includes `ggplot2`, `dp
 
 For this assignment, we will be using the following packages.
 
-| Package   | Function                                                      |
-|-------------------|-----------------------------------------------------|
-| `readr`   | `read.csv`                                                    |
-| `dplyr`   | `glimpse` `group_by()` `summarise()` `mutate()`               |
-| `ggplot2` | `ggplot` `geom_bar` `scale_x_continuous()` `labs()` `ggtitle` |
-| `scales`  | `percent()`                                                   |
-| `DT`      | `datatable()`                                                 |
+| Package   | Function                                                                                                                              |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `readr`   | `read_csv`                                                                                                                            |
+| `dplyr`   | `glimpse()` `group_by()` `summarise()` `mutate()`                                                                                     |
+| `ggplot2` | `ggplot()` `geom_bar()` `scale_x_continuous()` `scale_y_continuous()` `labs()` `xlab()` `ylab()` `ggtitle()` `theme()` `coord_flip()` |
+| `DT`      | `datatable()`                                                                                                                         |
 
 # Dataset
 
@@ -92,16 +91,15 @@ Next, use `group_by()` function from the `dplyr` package to group rows by column
       group_by(Major_category) %>%
 
 Then, use `summarise()` and `sum()` functions to sum by group.
-We find the total women, total men, and total people for each major category. Use `na.rm=TRUE` to exclude NA's.
+We find the total women, total men, and total people for each major category.
+Use `na.rm=TRUE` to exclude NA's.
 Otherwise, NA can be return if there is a NA value for the major category.
 
-```
-college_major <- raw_data %>%
-  group_by(Major_category) %>% #Here we group the major category
-  summarise(Total = sum(Total,na.rm=TRUE), 
-            Men = sum(Men,na.rm=TRUE), 
-            Women = sum(Women,na.rm=TRUE))
-```
+    college_major <- raw_data %>%
+      group_by(Major_category) %>% #Here we group the major category
+      summarise(Total = sum(Total,na.rm=TRUE), 
+                Men = sum(Men,na.rm=TRUE), 
+                Women = sum(Women,na.rm=TRUE))
 
 By now, we should have the total women, total men, and total people for each major category.
 Use `mutate()` from the `dplyr` package to create a new column for the percentage of women for each major category.
