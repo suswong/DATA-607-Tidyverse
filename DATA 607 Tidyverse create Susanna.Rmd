@@ -151,7 +151,7 @@ ggplot(data = college_major, aes(y = reorder(Major_category, ShareWomen), x = Sh
 
 The top major category that has the highest share of women are Health, Education, and Psychology & Social Work.
 
-# Question 2: Which major category has the highest unemployment rate? {.tabset}
+# Question 2: Which major category has the lowest unemployment rate? {.tabset}
 
 ## Analysis
 
@@ -197,19 +197,68 @@ college_major <- raw_data %>%
 datatable(college_major, options = list(scrollX = TRUE))
 ```
 
-## Visualization
+## Visualization {.tabset}
 
 Here is another approach to create our bar graph.
+For the 1st question, we plot the `Major_Category` on the y-axis.
+For this question, we can plot the `Major_Category` on the x-axis.
 
-We can also use the same code as in question 1.
-Simply, just replace `Major_category` with `Unemployment_rate` and rename the axes with their appropriate names.
+However, there are some issues with the visualization:
+
+-   The labels on the x-axis is illegible due to the long names of the variables (`Major_Category`)
+-   The title is not center
+-   It is difficult to visualize which major category had the lowest unemployment rate.
 
 ```{r}
-ggplot(data = college_major, aes(y = reorder(Major_category, Unemployment_rate), x = Unemployment_rate)) + geom_bar(stat="identity")  +  labs(x = "Unemployment Rate" , y = "Major Category") + ggtitle("Unemployment Rate") + scale_x_continuous(labels = scales::percent) 
+ggplot(data = college_major, aes(x = Major_category, y = Unemployment_rate)) + geom_bar(stat="identity")  +  
+  labs(x = "Major Category" , y = "Unemployment Rate") + 
+  ggtitle("Unemployment Rate") + 
+  scale_y_continuous(labels = scales::percent) 
+```
+
+### Approach 1
+
+| Problem                  | Solution                                                                                                                  |
+|----------------|--------------------------------------------------------|
+| Illegible Major Category | Keep `Major_Category` on the x-axis and rotate the labels 45° using `+ theme(axis.text.x=element_text(angle=45,hjust=1))` |
+| Center the Title         | use `+ theme(plot.title=element_text(hjust=0.5))`                                                                         |
+| Reorder Major Category   | use `reorder()` to reorder the major category based on unemployment rate                                                  |
+
+```{r}
+ggplot(data = college_major, aes(x = reorder(Major_category,Unemployment_rate), y = Unemployment_rate)) + 
+  ggtitle("Unemployment Rate") + theme(plot.title=element_text(hjust=0.5))  + xlab("Major Category")+ ylab("Unemployment Rate") + theme(axis.text.x=element_text(angle=45,hjust=1)) +
+geom_bar(stat = "identity",fill = "seagreen", color = "black")+ 
+  scale_y_continuous(labels = scales::percent) 
+```
+
+### Approach 2
+
+| Problem                  | Solution                                                                 |
+|-------------------|----------------------------------------------------|
+| Illegible Major Category | Use `coord_flip()` to flip the axes                                      |
+| Center the Title         | use `+ theme(plot.title=element_text(hjust=0.5))`                        |
+| Reorder Major Category   | use `reorder()` to reorder the major category based on unemployment rate |
+
+```{r}
+ggplot(data = college_major, aes(x = reorder(Major_category, -Unemployment_rate), y = Unemployment_rate)) + 
+  coord_flip() + 
+  ggtitle("Unemployment Rate")  + xlab("Major Category")+ ylab("Unemployment Rate") +
+geom_bar(stat = "identity",fill = "seagreen", color = "black") + 
+  scale_y_continuous(labels = scales::percent) 
 ```
 
 The top three major category that has the highest unemployment rate are Social Science, Arts, and Humanities & Liberal Arts.
 The top three major category that has the lowest unemployment rate are Education, Physical Sciences, and Agriculture & Natural Resources.
+
+### Approach 3
+
+We can also use the same code as in question 1.
+Plot the `Major_Category` on the y-axis.
+Simply, just replace `ShareWomen` with `Unemployment_rate` and rename the axes with their appropriate names.
+
+```{r}
+ggplot(data = college_major, aes(y = reorder(Major_category, -Unemployment_rate), x = Unemployment_rate)) + geom_bar(stat="identity",fill = "seagreen", color = "black")  +  labs(x = "Unemployment Rate" , y = "Major Category") + ggtitle("Unemployment Rate") + scale_x_continuous(labels = scales::percent) 
+```
 
 # Conclusion
 
@@ -217,7 +266,7 @@ Question 1: Which major category has the highest share of women?
 
 The top three major category that has the highest share of women are Health, Education, and Psychology & Social Work.
 
-Question 2: Which major category has the highest unemployment rate?
+Question 2: Which major category has the lowest unemployment rate?
 
 The top three major category that has the highest unemployment rate are Social Science, Arts, and Humanities & Liberal Arts.
 The top three major category that has the lowest unemployment rate are Education, Physical Sciences, and Agriculture & Natural Resources.
